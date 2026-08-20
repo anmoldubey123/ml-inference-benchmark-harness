@@ -1,6 +1,6 @@
 # Model Triage — i.MX93 Competition Analysis
 
-Tracking progress sourcing TFLite models for the i.MX93 CPU benchmarking deliverable. Target column in the competition analysis spreadsheet: **i.MX93 CPU (2× Cortex-A55, 2 threads, XNNPACK)**.
+Tracking progress sourcing TFLite models for the i.MX93 CPU benchmarking: **i.MX93 CPU (2× Cortex-A55, 2 threads, XNNPACK)**.
 
 Status legend:
 - **Sourced** — TFLite file in hand, all parameters verified, ready to benchmark.
