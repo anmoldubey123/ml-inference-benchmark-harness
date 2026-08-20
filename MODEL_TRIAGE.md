@@ -21,7 +21,7 @@ Status legend:
 | 11.7 | DeepLabV3-Plus-MobileNet w8a8             | DeepLabV3+ (MNv2) | w8a8 (uint8/uint8)    | 1×520×520×3 (export pad from 513) |https://huggingface.co/qualcomm/DeepLabV3-Plus-MobileNet |TFLITE w8a8 (Qualcomm AI Hub, QAIRT 2.45)  |4296b534a2cf054cfae2bf79d1c5ad9e206b64ff3095f384841aee91a0e25eb8        | Sourced   | Smoke-tested via NFS, ~1.44s with 2t+XNNPACK; output is per-pixel class indices (argmax internal). Input shape 520 not 513 (Qualcomm pad). |
 | 11.8 | DeepLabV3-Plus-MobileNet w8a16 | DeepLabV3+ (MNv2 backbone) | w8a16 (int8/int16) | 1×520×520×3 (assumed same as 11.7) | https://huggingface.co/qualcomm/DeepLabV3-Plus-MobileNet | ONNX/QNN_DLC w8a16 only; TFLite w8a16 not pre-exported | — | Needs conversion | Same situation as rows 11.3, 11.4. Options: (1) qai-hub-models Python export with --quantize w8a16, (2) self-convert from float, (3) substitute w8a8 (already have from 11.7). Decision deferred until full triage complete. |
 | 11.9 | ResNet101 w8a8 224×224 | ResNet101 | w8a8 (uint8/uint8) | 1×224×224×3 | https://huggingface.co/qualcomm/ResNet101 | TFLITE w8a8 (Qualcomm AI Hub, QAIRT 2.45) | 5237460259347f850d5d89f2d4097b02900860c2fc74bc0b93a8b15a4de0661f | Sourced | Smoke-tested via NFS, ~313ms with 2t+XNNPACK |
-| 11.10 | ViT-Tiny | ViT-Tiny/16 | fp32 (per mentor — same as ViT-Base) | 1×224×224×3 (assumed standard) | — | Not found pre-exported in TFLite | — | Needs conversion | Qualcomm AI Hub does not host ViT-Tiny (only ViT-Base). No community TFLite found in HF search. Conversion options: (1) ai-edge-torch from WinKawaks/vit-tiny-patch16-224 PyTorch weights, (2) timm ViT-Tiny → ONNX → TFLite, (3) skip with documented "could not source." Decision deferred. |
+| 11.10 | ViT-Tiny | ViT-Tiny/16 | fp32 (same as ViT-Base) | 1×224×224×3 (assumed standard) | — | Not found pre-exported in TFLite | — | Needs conversion | Qualcomm AI Hub does not host ViT-Tiny (only ViT-Base). No community TFLite found in HF search. Conversion options: (1) ai-edge-torch from WinKawaks/vit-tiny-patch16-224 PyTorch weights, (2) timm ViT-Tiny → ONNX → TFLite, (3) skip with documented "could not source." Decision deferred. |
 
 ## Per-model investigation log
 
@@ -72,7 +72,7 @@ Status legend:
 - No custom ops; XNNPACK applied with 14 delegate kernels
 - Smoke test (2t XNNPACK, 1+3 iters): avg 3,301ms (~0.30 fps), std 7.2ms (0.2%), init 806ms
 - Memory: ~685MB peak working set (significant — ~33% of board RAM)
-- Mentor confirmed quant target = fp32 (not w8a8); Qualcomm pre-exports preferred where available
+- confirmed quant target = fp32 (not w8a8); Qualcomm pre-exports preferred where available
 - Status: Sourced and validated.
 
 ### 11.6 BEVDet
@@ -108,7 +108,7 @@ Status legend:
 ### 11.8 DeepLabV3-Plus-MobileNet w8a16
 - Qualcomm HF page lists w8a16 only for ONNX and QNN_DLC, not TFLite.
 - Same situation as rows 11.3 and 11.4. Conversion options:
-  (1) qai-hub-models export with --quantize w8a16 (mentor approved — free Qualcomm AI Hub account)
+  (1) qai-hub-models export with --quantize w8a16 (free Qualcomm AI Hub account)
   (2) self-convert from float DeepLabV3+ MobileNet
   (3) substitute w8a8 (already have from 11.7) and note in spreadsheet
 - Status: Needs conversion. Deferred until after Phase 1 formal benchmarks complete.
